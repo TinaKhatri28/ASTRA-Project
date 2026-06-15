@@ -55,12 +55,18 @@ MODEL2_CLASSES = {
     4: "Target Spot Disease"
 }
 
+class CustomDepthwiseConv2D(tf.keras.layers.DepthwiseConv2D):
+    def __init__(self, **kwargs):
+        if 'groups' in kwargs:
+            del kwargs['groups']
+        super().__init__(**kwargs)
+
 @st.cache_resource
 def load_disease_model():
     model_path = "model2_final_cotton_disease.h5"
     if not os.path.exists(model_path):
         return None
-    return load_model(model_path, compile=False)
+    return load_model(model_path, custom_objects={'DepthwiseConv2D': CustomDepthwiseConv2D}, compile=False)
 
 model = load_disease_model()
 
